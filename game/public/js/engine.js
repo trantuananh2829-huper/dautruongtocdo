@@ -386,6 +386,26 @@ export class BattleEngine {
         state.strikes += 1;
         state.nextPulse += interval;
       }
+    } else if (state.kind === 'hollow_purple') {
+      const spec = fighter.character.ultimate;
+      if (!state.strikes) {
+        const impactX = opponent.alive ? opponent.x : this.bounds.width / 2;
+        const impactY = opponent.alive ? opponent.y : this.bounds.height / 2;
+        this.effects.push({
+          type: 'thunderbolt', x: impactX, y: impactY,
+          fromX: fighter.x, fromY: fighter.y,
+          radius: spec.aoe_radius ?? 68, color: spec.color ?? '#a855f7',
+          seed: this.sequence++, life: 0.72, maxLife: 0.72, isUltimate: true,
+        });
+        for (const target of this.fighters) {
+          if (target.side === fighter.side || !target.alive) continue;
+          if (Math.hypot(target.x - impactX, target.y - impactY) > (spec.aoe_radius ?? 68)) continue;
+          this._dealDamage(target, spec.damage ?? 20, fighter, { knockbackSpeed: 230, chargeUltimate: false });
+        }
+        this.onSound('thunder');
+        state.strikes = 1;
+      }
+      if (state.elapsed >= state.duration) fighter.ultimateState = null;
     } else if (state.kind === 'folded_atlas' || state.kind === 'little_biosphere') {
       const spec = fighter.character.ultimate;
       const pulseCount = Math.max(1, Math.floor(spec.pulse_count ?? 8));
@@ -548,10 +568,11 @@ export class BattleEngine {
 
   _dealDamage(target, amount, attacker, { stunSeconds = 0, knockbackSpeed = 145, chargeUltimate = true } = {}) {
     if (!target?.alive || this.result) return;
-    target.hp = Math.max(0, target.hp - amount);
+    const finalDamage = target.character?.id === 'gojo' ? Math.max(1, Math.ceil(amount * 0.75)) : amount;
+    target.hp = Math.max(0, target.hp - finalDamage);
     target.flash = 0.16;
     if (stunSeconds > 0) target.stunTimer = Math.max(target.stunTimer, stunSeconds);
-    this.effects.push({ type: 'damage-pop', x: target.x, y: target.y - 26, life: 0.42, maxLife: 0.42, amount });
+    this.effects.push({ type: 'damage-pop', x: target.x, y: target.y - 26, life: 0.42, maxLife: 0.42, amount: finalDamage });
     if (attacker && chargeUltimate) attacker.energy = Math.min(100, attacker.energy + (attacker.character.ultimate.hit_charge ?? 9));
     if (attacker && knockbackSpeed > 0) {
       const dx = target.x - attacker.x;
