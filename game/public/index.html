@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f1f7fd" />
+    <meta name="description" content="Đấu Trường Tốc Độ — sàn đấu tự động gọn gàng, nơi nhịp chiến đấu tăng tốc đến phút chót." />
+    <title>Đấu Trường Tốc Độ — Auto Battler</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='3' y='3' width='34' height='34' rx='9' fill='%23357fb5'/%3E%3Cpath d='M11 21h18M20 12v18' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <div class="page-grain" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="#menu" aria-label="Đấu Trường Tốc Độ — về menu">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+          <span>ĐẤU TRƯỜNG <b>TỐC ĐỘ</b></span>
+        </a>
+        <div class="header-right">
+          <span class="live-indicator"><i></i> AUTO BATTLE / 60 FPS</span>
+          <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" title="Bật hoặc tắt âm thanh">
+            <span class="sound-icon" aria-hidden="true">♫</span><span id="soundLabel">ÂM THANH: BẬT</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="screen menu-screen is-active" id="screen-menu" aria-labelledby="menuTitle">
+          <div class="menu-orbit orbit-one" aria-hidden="true"></div>
+          <div class="menu-orbit orbit-two" aria-hidden="true"></div>
+          <div class="menu-content">
+            <div class="eyebrow"><span class="eyebrow-mark">✦</span> ĐẤU TRƯỜNG TỰ ĐỘNG · NHỊP ĐỘ TĂNG DẦN</div>
+            <h1 class="hero-title" id="menuTitle"><span>ĐẤU TRƯỜNG</span><strong>TỐC ĐỘ</strong></h1>
+            <p class="hero-copy">Chọn hai đấu sĩ, rồi tận hưởng trận chiến tự động.</p>
+            <div class="mini-arena" aria-hidden="true">
+              <span class="mini-glow glow-blue"></span><span class="mini-glow glow-orange"></span>
+              <span class="mini-fighter fighter-blue"><i></i></span><span class="mini-fighter fighter-orange"><i></i></span>
+              <span class="mini-slash slash-a"></span><span class="mini-slash slash-b"></span>
+              <span class="mini-arena-label">ARENA_01</span>
+            </div>
+            <div class="menu-actions">
+              <button class="pixel-button primary-button" id="startButton" type="button"><span>CHỌN ĐẤU SĨ</span><b>→</b></button>
+              <button class="pixel-button secondary-button" id="guideButton" type="button"><span>HƯỚNG DẪN</span><b>?</b></button>
+            </div>
+            <div class="menu-foot"><span><b>01</b> CHỌN ĐẤU SĨ</span><i></i><span><b>02</b> XEM TRẬN ĐẤU</span><i></i><span><b>03</b> TĂNG TỐC</span></div>
+          </div>
+          <div class="menu-side-note note-left">ĐẤU TRƯỜNG · 01</div>
+          <div class="menu-side-note note-right">TỰ ĐỘNG CHIẾN ĐẤU<br />BẠN CHỈ CẦN THEO DÕI</div>
+        </section>
+
+        <section class="screen select-screen" id="screen-select" aria-labelledby="selectTitle" hidden>
+          <div class="section-heading">
+            <div><p class="eyebrow"><span class="eyebrow-mark">BƯỚC 1 · ĐỘI HÌNH</span></p><h2 id="selectTitle">CHỌN ĐẤU SĨ</h2></div>
+            <p class="section-intro">Chọn một đấu sĩ cho mỗi phe. Sau lựa chọn đầu tiên, bước kế tiếp sẽ tự mở.</p>
+          </div>
+          <div class="pick-tabs" role="group" aria-label="Tiến trình chọn đấu sĩ">
+            <button class="pick-tab is-current" id="pickLeftTab" type="button" data-pick-side="left" aria-current="step"><span class="step-number">1</span><span class="step-copy"><b>PHE TRÁI</b><small id="leftTabMark">CHỌN ĐẤU SĨ</small></span></button>
+            <button class="pick-tab" id="pickRightTab" type="button" data-pick-side="right" disabled><span class="step-number">2</span><span class="step-copy"><b>PHE PHẢI</b><small id="rightTabMark">ĐANG CHỜ</small></span></button>
+          </div>
+          <div class="select-layout">
+            <aside class="faction-panel faction-left" id="leftPreview" aria-label="Lựa chọn Phe Trái"></aside>
+            <div class="roster-wrap">
+              <div class="roster-label"><span>DANH SÁCH ĐẤU SĨ</span><span id="rosterCount">00 ĐẤU SĨ</span></div>
+              <div class="character-grid" id="characterGrid"></div>
+            </div>
+            <aside class="faction-panel faction-right" id="rightPreview" aria-label="Lựa chọn Phe Phải"></aside>
+          </div>
+          <div class="select-footer">
+            <button class="text-button" id="selectBackButton" type="button">← VỀ MENU</button>
+            <p id="selectionHint" aria-live="polite">Bước 1/2 · Chọn đấu sĩ cho Phe Trái.</p>
+            <button class="pixel-button primary-button enter-battle" id="enterBattleButton" type="button" disabled><span>VÀO TRẬN</span><b>↗</b></button>
+          </div>
+        </section>
+
+        <section class="screen battle-screen" id="screen-battle" aria-labelledby="battleTitle" hidden>
+          <div class="battle-heading">
+            <div><p class="eyebrow"><span class="eyebrow-mark">LIVE / COMBAT FEED</span></p><h2 id="battleTitle">TRẬN ĐẤU <span>ĐANG DIỄN RA</span></h2></div>
+            <div class="match-timer"><span class="timer-dot"></span><span id="matchClock">00:00</span><small>THỜI GIAN TRẬN</small></div>
+          </div>
+          <div class="fighter-heads">
+            <div class="fighter-head fighter-head-left"><span class="side-tag">PHE TRÁI</span><strong id="leftName">KIẾM SĨ</strong><span class="fighter-type" id="leftType">CẬN CHIẾN</span></div>
+            <div class="versus-mark" aria-hidden="true">VS</div>
+            <div class="fighter-head fighter-head-right"><span class="side-tag">PHE PHẢI</span><strong id="rightName">CUNG THỦ</strong><span class="fighter-type" id="rightType">TẦM XA</span></div>
+          </div>
+          <div class="arena-frame" id="arenaFrame">
+            <canvas id="battleCanvas" aria-label="Arena chiến đấu pixel-art giữa hai đấu sĩ" role="img"></canvas>
+            <div class="result-overlay" id="resultOverlay" hidden>
+              <div class="result-kicker">TRẬN ĐẤU KẾT THÚC</div>
+              <h3 id="resultTitle">KIẾM SĨ THẮNG!</h3>
+              <p id="resultSubtitle">Kẻ thắng cuộc vẫn chưa dừng lại.</p>
+              <div class="result-actions">
+                <button class="pixel-button primary-button" id="rematchButton" type="button"><span>CHƠI LẠI</span><b>↻</b></button>
+                <button class="pixel-button secondary-button" id="resultMenuButton" type="button"><span>VỀ MENU</span><b>⌂</b></button>
+              </div>
+              <p class="restart-note">TỰ ĐỘNG TÁI ĐẤU SAU <b id="restartCountdown">08</b> GIÂY</p>
+            </div>
+          </div>
+          <div class="battle-bottom">
+            <div class="ultimate-panel ultimate-left" id="leftUltimatePanel">
+              <div class="ultimate-title"><span>ULTIMATE</span><b id="leftUltimateName">WORLD STASIS</b></div>
+              <div class="energy-track"><div class="energy-fill" id="leftEnergyFill"></div><span class="energy-glint"></span></div>
+              <div class="battle-statline"><span id="leftSpeed">Tốc độ tấn công: 1.00</span><span id="leftEnergyText">NẠP 0%</span></div>
+            </div>
+            <div class="battle-status"><span class="battle-status-dot"></span><span id="battleStatus">TỰ ĐỘNG CHIẾN ĐẤU</span></div>
+            <div class="ultimate-panel ultimate-right" id="rightUltimatePanel">
+              <div class="ultimate-title"><span>ULTIMATE</span><b id="rightUltimateName">SPATIAL REND</b></div>
+              <div class="energy-track"><div class="energy-fill" id="rightEnergyFill"></div><span class="energy-glint"></span></div>
+              <div class="battle-statline"><span id="rightSpeed">Tốc độ tấn công: 1.00</span><span id="rightEnergyText">NẠP 0%</span></div>
+            </div>
+          </div>
+          <div class="battle-controls"><button class="text-button" id="battleMenuButton" type="button">← VỀ MENU</button><span>Trận đấu tự động · theo dõi tốc độ tăng dần</span><button class="text-button" id="changeFightersButton" type="button">ĐỔI ĐẤU SĨ ↗</button></div>
+        </section>
+      </main>
+
+      <footer class="site-footer"><span>© ĐẤU TRƯỜNG TỐC ĐỘ</span><span class="footer-center"><i></i> PIXEL FIGHT ENGINE <b>v1.0</b></span><span>CHƠI. XEM. BÙNG NỔ.</span></footer>
+    </div>
+
+    <div class="modal-backdrop" id="guideModal" hidden>
+      <section class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+        <button class="modal-close" id="closeGuideButton" type="button" aria-label="Đóng hướng dẫn">×</button>
+        <p class="eyebrow"><span class="eyebrow-mark">HOW TO WATCH</span></p>
+        <h2 id="guideTitle">HƯỚNG DẪN<br />CHIẾN TRƯỜNG</h2>
+        <div class="guide-steps">
+          <p><b>01 / CHỌN PHE</b><span>Chọn đấu sĩ cho phe trái rồi phe phải. Có thể cho cả hai phe dùng cùng một nhân vật.</span></p>
+          <p><b>02 / TỰ ĐỘNG ĐẤU</b><span>Đấu sĩ tự di chuyển, ngắm bắn và né. Projectile trúng đối thủ, va nhau hoặc vỡ khi chạm tường.</span></p>
+          <p><b>03 / CÀNG LÂU CÀNG NHANH</b><span>Tốc độ đánh tăng từ 1.00 lên tối đa 2.08. Thanh đầy sẽ tự tung Ultimate.</span></p>
+          <p><b>04 / HAI LỐI ĐÁNH MỚI</b><span>Nếp tích dấu khảo sát bằng ghim mực; Chuông Rêu luân phiên đúng ba nốt Mầm, Sương, Gió với hiệu ứng riêng.</span></p>
+          <p><b>05 / TÁI ĐẤU</b><span>Chọn CHƠI LẠI để rematch, hoặc về menu. Nếu không chọn, trận mới bắt đầu sau vài giây.</span></p>
+        </div>
+        <button class="pixel-button primary-button guide-confirm" id="guideConfirmButton" type="button"><span>ĐÃ HIỂU</span><b>↗</b></button>
+      </section>
+    </div>
+  </body>
+</html>
