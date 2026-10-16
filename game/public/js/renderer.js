@@ -215,7 +215,18 @@ export class BattleRenderer {
       ctx.imageSmoothingEnabled = false;
       const bob = Math.sin(elapsed * 7 + (fighter.side === 'right' ? 1 : 0)) * 1.3;
       ctx.globalAlpha = isHit ? 0.72 : 1;
-      ctx.drawImage(customImage, -34, -36 + bob, 68, 72);
+      const sheet = char.spriteSheet;
+      const sheetImage = sheet?.source ? this._getSpriteImage({ spriteImage: sheet.source }) : null;
+      if (sheetImage && sheetImage.naturalWidth >= sheet.frameWidth * sheet.frameCount) {
+        const moving = Math.hypot(fighter.vx || 0, fighter.vy || 0) > 22 || isSlashing;
+        const frameCount = moving ? sheet.frameCount - sheet.moveStartFrame : sheet.idleFrames;
+        const frameOffset = moving ? sheet.moveStartFrame : 0;
+        const frameRate = moving ? 12 : 4;
+        const frame = frameOffset + (Math.floor(elapsed * frameRate + (fighter.side === 'right' ? 1 : 0)) % frameCount);
+        ctx.drawImage(sheetImage, frame * sheet.frameWidth, 0, sheet.frameWidth, sheet.frameHeight, -34, -36 + bob, 68, 72);
+      } else {
+        ctx.drawImage(customImage, -34, -36 + bob, 68, 72);
+      }
       ctx.restore();
     } else {
       // Pixel-art fallback for fighters without a supplied sprite image.
