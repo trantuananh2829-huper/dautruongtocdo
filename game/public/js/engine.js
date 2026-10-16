@@ -417,17 +417,18 @@ export class BattleEngine {
       }
     } else if (state.kind === 'spatial_rend') {
       while (state.elapsed >= state.nextRain && state.nextRain < state.duration) {
-        const rainCount = fighter.attackSpeed >= 1.6 ? 4 : 3;
+        const spec = fighter.character.ultimate;
+        const rainCount = Math.max(1, Math.floor(spec.arrows_per_rain ?? (fighter.attackSpeed >= 1.6 ? 4 : 3)));
         for (let i = 0; i < rainCount; i += 1) {
           const x = clamp(opponent.x + randomBetween(-125, 125), GAME_CONFIG.arenaInset + 12, this.bounds.width - GAME_CONFIG.arenaInset - 12);
           this.projectiles.push({
             id: this.sequence++, side: fighter.side, kind: 'rain_arrow', type: 'mưa tên', color: '#ff8c45', ultimate: true,
             x, y: GAME_CONFIG.arenaInset + 2, vx: randomBetween(-16, 16), vy: randomBetween(280, 360),
-            radius: 4, damage: 2, trail: [], frozenUntil: 0, dead: false, life: 2.2,
+            radius: 4, damage: spec.damage_per_arrow ?? 2, trail: [], frozenUntil: 0, dead: false, life: 2.2,
           });
         }
         this.effects.push({ type: 'rain-flash', x: opponent.x, y: opponent.y, life: 0.22, maxLife: 0.22, color: '#ff9c55' });
-        state.nextRain += 0.2;
+        state.nextRain += spec.rain_interval_seconds ?? 0.2;
       }
     } else if (state.kind === 'generic_surge' && state.elapsed >= state.nextPulse) {
       state.nextPulse += 0.48;
