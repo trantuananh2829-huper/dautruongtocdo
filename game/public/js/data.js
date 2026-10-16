@@ -189,7 +189,6 @@ export const CHARACTERS = [
     archetype: 'chú thuật sư tầm xa',
     weapon: 'chú lực',
     spriteImage: '/assets/gojo.svg',
-    spriteSheet: { frameWidth: 112, frameHeight: 144, frameCount: 11, idleFrames: 5, moveStartFrame: 5, source: '/assets/gojo-sprites.png' },
     sprite: { main: '#171c2c', accent: '#6a8cff', skin: '#f1c6a6', shadow: '#101321' },
     summary: 'Vô Hạ Hạn giảm 25% sát thương nhận vào. Hollow Purple gây sát thương diện rộng.',
     attack: { kind: 'projectile', base_fire_rate: 1.08 },
