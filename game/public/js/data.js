@@ -73,6 +73,7 @@ export const CHARACTERS = [
     name: 'Mage',
     archetype: 'pháp sư',
     weapon: 'trượng sét',
+    spriteImage: '/assets/mage.svg',
     sprite: { main: '#5367d6', accent: '#78d8ff', skin: '#f3c79e', shadow: '#3546a0' },
     summary: 'Sét diện rộng (2 HP). Bão Sấm: 8 tia sét, tối đa 48 HP.',
     attack: {
@@ -111,6 +112,7 @@ export const CHARACTERS = [
     name: 'Nếp',
     archetype: 'khống chế tuyến',
     weapon: 'bản đồ gấp',
+    spriteImage: '/assets/nep.svg',
     sprite: { main: '#8d714b', accent: '#e1bd72', skin: '#efc9a0', shadow: '#51402d' },
     summary: 'Ghim dấu khảo sát; mỗi dấu thứ ba mở một đường gấp hữu hình. Ultimate tối đa 32 HP.',
     attack: { kind: 'survey_projectile', base_fire_rate: 1.15 },
@@ -143,6 +145,7 @@ export const CHARACTERS = [
     name: 'Chuông Rêu',
     archetype: 'điều âm sinh thái',
     weapon: 'chuông terrarium',
+    spriteImage: '/assets/chuong-reu.svg',
     sprite: { main: '#557a59', accent: '#b5cc7c', skin: '#d9c39a', shadow: '#344d3c' },
     summary: 'Luân phiên đúng ba nốt Mầm · Sương · Gió. Hòa Âm Tiểu Sinh Quyển tối đa 32 HP.',
     attack: { kind: 'bell_notes', base_fire_rate: 1.22 },
